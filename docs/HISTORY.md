@@ -26,6 +26,14 @@ Append-only. Never delete an entry; mark superseded entries `DEPRECATED` instead
 **Impact:** API-level, DB-schema-level, and full page-inventory documentation could not be generated at this pass and are tracked as open tasks in PROJECT_TRACK.md rather than fabricated.
 **Status:** ACTIVE — supersedes nothing; this is the first documentation pass for this project.
 
+### 2026-09-22 — Core MVP Implementation Complete
+**Event:** Full implementation of Phase 4 (Backend APIs), Phase 5 (Anomaly Detection Pipeline), Phase 6 (AI Agent Chain), and Phase 2 (Frontend Shell & Design System).
+**Outcome:** The application is now running locally. Synthetic data generation (5k policies, 8k claims, 5% fraud) runs successfully. The 3-layer anomaly detection (Rules, Isolation Forest, Louvain Graph) successfully scores claims. The Ask ClaimLens 4-stage LLM fallback chain is fully wired with `sqlglot` guarding and deterministic fallback queries.
+**Important Fixes:** 
+1. Fixed DuckDB permissions (ADR-002) to strictly toggle external access during data load, hardening the analytics layer. 
+2. Standardized date parsing across SQLite and DuckDB by using `substr(date, 1, 7)` for monthly groupings instead of `strftime`, preventing strict typing errors.
+**Status:** CONFIRMED. The backend runs on `uvicorn` (port 8000) and the frontend runs on Vite (port 5173).
+
 ---
 
 ## Deprecated / superseded items
