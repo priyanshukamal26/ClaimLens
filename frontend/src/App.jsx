@@ -51,22 +51,39 @@ function Sidebar() {
   )
 }
 
+function AppLayout() {
+  return (
+    <div style={{ display: 'flex', minHeight: '100vh', width: '100%' }}>
+      <Sidebar />
+      <main style={{ flex: 1, padding: '32px 40px', overflowY: 'auto', maxHeight: '100vh' }}>
+        <Routes>
+          <Route path="/" element={<Navigate to="overview" replace />} />
+          <Route path="overview" element={<ExecutiveOverview />} />
+          <Route path="review" element={<ReviewQueue />} />
+          <Route path="ask" element={<AskClaimLens />} />
+          <Route path="decisions" element={<DecisionLog />} />
+          <Route path="brief" element={<MorningBrief />} />
+        </Routes>
+      </main>
+    </div>
+  );
+}
+
+import LandingPage from './pages/LandingPage.jsx';
+
 export default function App() {
   return (
     <BrowserRouter>
-      <div style={{ display: 'flex', minHeight: '100vh' }}>
-        <Sidebar />
-        <main style={{ flex: 1, padding: '32px 40px', overflowY: 'auto', maxHeight: '100vh' }}>
-          <Routes>
-            <Route path="/" element={<Navigate to="/overview" replace />} />
-            <Route path="/overview" element={<ExecutiveOverview />} />
-            <Route path="/review" element={<ReviewQueue />} />
-            <Route path="/ask" element={<AskClaimLens />} />
-            <Route path="/decisions" element={<DecisionLog />} />
-            <Route path="/brief" element={<MorningBrief />} />
-          </Routes>
-        </main>
-      </div>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<LandingPage />} />
+        
+        {/* Authenticated Dashboard Routes */}
+        <Route path="/app/*" element={<AppLayout />} />
+        
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </BrowserRouter>
   )
 }

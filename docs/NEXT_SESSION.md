@@ -9,6 +9,7 @@ The Core MVP (Backend, Frontend Shell, Anomaly Detection Pipeline, and Ask Claim
 - Implemented Phase 6: Ask ClaimLens Agent Chain with 4-stage fallback, SQL guarding (`sqlglot`), and 10 Golden Queries.
 - Implemented Phase 2: React + Vite frontend with Tailwind CSS v4 design system, including all core pages (Executive Overview, Review Queue, Ask ClaimLens, Decision Log, Morning Brief).
 - Fixed DuckDB strict-typing date errors (using `substr`) and tightened DuckDB external access security.
+- Implemented Phase 7 (Partial): Built a Wise.com-inspired public landing page and refactored React routing to separate public (`/`) vs authenticated (`/app/*`) areas.
 
 ## Current blocking issues
 - API keys for Groq/Gemini must be added to `backend/.env` by the user before live LLM features can be tested (fallback queries currently handle this seamlessly for demos).

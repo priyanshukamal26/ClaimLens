@@ -34,6 +34,11 @@ Append-only. Never delete an entry; mark superseded entries `DEPRECATED` instead
 2. Standardized date parsing across SQLite and DuckDB by using `substr(date, 1, 7)` for monthly groupings instead of `strftime`, preventing strict typing errors.
 **Status:** CONFIRMED. The backend runs on `uvicorn` (port 8000) and the frontend runs on Vite (port 5173).
 
+### 2026-09-22 — Wise-Inspired Landing Page Added
+**Event:** Added a public-facing landing page (Phase 7 Polish) inspired by the Wise.com aesthetic.
+**Outcome:** Refactored React routing to isolate the authenticated dashboard (`/app/*`) from the public landing page (`/`). The landing page features a hero widget, value prop grid, and zig-zag highlights utilizing the ClaimLens design tokens.
+**Status:** CONFIRMED.
+
 ---
 
 ## Deprecated / superseded items
