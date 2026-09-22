@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { AlertTriangle, Eye, ChevronDown } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
+import { AlertTriangle, Eye, ChevronDown, CheckCircle2 } from 'lucide-react'
 import { api } from '../api.js'
 
 function AnomalyScoreBar({ score }) {
@@ -36,6 +36,27 @@ function LayerBreakdown({ layers }) {
   )
 }
 
+function Toast({ message, type, onClose }) {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 3000)
+    return () => clearTimeout(timer)
+  }, [onClose])
+  return (
+    <div style={{
+      position: 'fixed', top: 24, right: 24, zIndex: 100,
+      background: type === 'Investigate' ? '#163300' : 'var(--color-sage-ink)',
+      color: '#fff', padding: '14px 24px', borderRadius: 12,
+      display: 'flex', alignItems: 'center', gap: 10,
+      boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+      animation: 'slideIn 0.3s ease-out',
+      fontSize: 14, fontWeight: 600,
+    }}>
+      <CheckCircle2 size={18} style={{ color: '#9FE870' }} />
+      {message}
+    </div>
+  )
+}
+
 export default function ReviewQueue() {
   const [queue, setQueue] = useState({ items: [], total: 0 })
   const [stats, setStats] = useState(null)
@@ -43,6 +64,7 @@ export default function ReviewQueue() {
   const [selectedClaim, setSelectedClaim] = useState(null)
   const [detailLoading, setDetailLoading] = useState(false)
   const [lobFilter, setLobFilter] = useState('')
+  const [toast, setToast] = useState(null)
 
   useEffect(() => {
     async function load() {
@@ -205,24 +227,26 @@ export default function ReviewQueue() {
               </div>
             )}
             <div style={{ marginTop: 24, display: 'flex', gap: 12 }}>
-              <button className="btn btn-primary" onClick={() => {
-                api.createDecision({
+              <button className="btn btn-primary" onClick={async () => {
+                await api.createDecision({
                   claim_id: selectedClaim.claim_id,
                   insight_type: 'Anomaly',
                   decision_type: 'Investigate',
                   decided_by: 'Reviewer',
                 })
+                setToast({ message: `${selectedClaim.claim_id} marked for Investigation`, type: 'Investigate' })
                 setSelectedClaim(null)
               }}>
                 Investigate
               </button>
-              <button className="btn btn-ghost" onClick={() => {
-                api.createDecision({
+              <button className="btn btn-ghost" onClick={async () => {
+                await api.createDecision({
                   claim_id: selectedClaim.claim_id,
                   insight_type: 'Anomaly',
                   decision_type: 'Dismiss',
                   decided_by: 'Reviewer',
                 })
+                setToast({ message: `${selectedClaim.claim_id} dismissed`, type: 'Dismiss' })
                 setSelectedClaim(null)
               }}>
                 Dismiss
@@ -231,6 +255,9 @@ export default function ReviewQueue() {
           </div>
         </div>
       )}
+
+      {/* Toast Notification */}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   )
 }

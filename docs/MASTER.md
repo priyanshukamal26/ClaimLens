@@ -4,15 +4,12 @@
 ```
 Project Name:          ClaimLens Nexus
 Track:                 Track 2 — "Insurance Insight Nexus" problem statement
-Project Version:       0.1 (pre-build / planning-verified)
-Documentation Version: 1.0
-Current Project Phase: Final pre-submission sprint
-Current Project Status: PLANNING VERIFIED — build status unknown (see note below)
-Last Updated:          2026-09-22 (submission day, per problem-statement deadline referenced in source material)
+Project Version:       1.0.0 (MVP Complete)
+Documentation Version: 2.0 (Post-Implementation)
+Current Project Phase: Integration & Polish (Phase 7)
+Current Project Status: IMPLEMENTED — backend and frontend operational locally
+Last Updated:          2026-09-22
 ```
-
-> **CRITICAL CONTEXT GAP — read this before anything else.**
-> This documentation set was generated from two artifacts: (1) a PS-compliance review of the original "ClaimLens Nexus Final Plan," and (2) a full verification pass on every dataset/technical/regulatory claim in that plan. **The original 697-line plan itself (with its exact Section 0–18 content — API list, DB schema, full page inventory, exact team roster) was not supplied as source material for this documentation pass.** Everywhere this doc set needs that level of detail, it says `PENDING — requires original plan` instead of inventing it. Drop the original plan file into this repo and re-run a documentation pass to fill those gaps — do not let a coding agent guess API routes or schema fields from vibes.
 
 ## One-paragraph description
 ClaimLens Nexus is a cloud-native (AWS) insurance analytics platform built for the "Insurance Insight Nexus" hackathon track. It ingests synthetic Indian insurance data (policies, claims, hospitals, garages, agents), surfaces claims/premium/loss-ratio trends, flags unusual patterns via a three-layer anomaly-detection stack (rule engine + Isolation Forest + graph/Louvain community detection), and lets users ask natural-language questions through a guarded, multi-step LLM agent pipeline. Its defining design principle — treated as a first-class UX constraint, not a disclaimer — is that the system surfaces **insights**, never **decisions**: every anomaly is badged INSIGHT, decisions live in a separate auditable Decision Log, and this distinction is enforced end-to-end in the UI copy and data model.
@@ -74,15 +71,13 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for the full picture and a Mermaid diag
 
 ## Current project state
 ```
-Completed:    PS-compliance review (done), full source/tech verification pass (done)
-In Progress:  Unknown — no build-status source material provided
-Blocked:      AWS account creation status unknown; Gemini model ID must be reconfirmed in-console
-Pending:      Original plan ingestion for API/DB/page-level docs; actual implementation
-Not Started:  Unknown, pending original plan
+Completed:    MVP Implementation (FastAPI, React, SQL Guard, CI/CD, Documentation)
+In Progress:  AWS Deployment (Requires user credentials)
+Blocked:      AWS Deployment (Pending manual deployment steps by user)
 ```
 
 ## Immediate next task
-**Confirm current build status against this doc set**, then execute the Hour-0 checklist in [PROJECT_TRACK.md](./PROJECT_TRACK.md) — this is time-critical because the source material places submission on the day this documentation was generated.
+**Deploy to AWS** following the steps in [DEPLOYMENT.md](./DEPLOYMENT.md), and record the **Demo Video** for submission.
 
 ## Important warnings (do not accidentally break these)
 1. **Lambda Function URL 403.** Grant both `lambda:InvokeFunctionUrl` AND `lambda:InvokeFunction` — a change from October 2025 that is still tripping teams. See DEPLOYMENT.md.

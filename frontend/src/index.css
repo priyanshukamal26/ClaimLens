@@ -437,3 +437,9 @@
     background: rgba(16, 19, 14, 0.3);
   }
 }
+
+/* ===== Toast Animation ===== */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}

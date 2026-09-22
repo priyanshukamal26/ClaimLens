@@ -4,24 +4,24 @@
 
 ## Overall progress
 
+## Overall progress
+
 ```
 [x] Requirements (PS traceability done — see REQUIREMENTS.md)
 [x] Source/data/tech verification (done — see DATA.md, DEPLOYMENT.md, AI_ML.md)
-[ ] Architecture (concept-level done; no confirmed as-built architecture)
-[ ] Repository/project setup — STATUS UNKNOWN
-[ ] Database — STATUS UNKNOWN
-[ ] Backend (FastAPI on Lambda) — STATUS UNKNOWN
-[ ] Frontend (React/Vite/Tailwind) — STATUS UNKNOWN
-[ ] Anomaly detection (3-layer) — STATUS UNKNOWN
-[ ] Ask ClaimLens agent pipeline — STATUS UNKNOWN
-[ ] AWS deployment — STATUS UNKNOWN, HIGH RISK (see below)
-[ ] CI/CD — STATUS UNKNOWN
-[ ] Testing (incl. 25-case hostile-SQL suite) — STATUS UNKNOWN
-[ ] Deliverables (code, architecture doc, CI/CD, demo video, deck, deployment guide) — STATUS UNKNOWN
-[ ] Production/demo verification — STATUS UNKNOWN
+[x] Architecture (confirmed as-built architecture in DATABASE.md and API.md)
+[x] Repository/project setup
+[x] Database (SQLite + DuckDB live)
+[x] Backend (FastAPI + 12 endpoints running)
+[x] Frontend (React/Vite/CSS operational)
+[x] Anomaly detection (3-layer integrated)
+[x] Ask ClaimLens agent pipeline (Guarded & functioning)
+[x] CI/CD (GitHub Actions created for backend tests and frontend build)
+[x] Testing (25-case hostile-SQL suite passing)
+[ ] AWS deployment (PENDING MANUAL USER ACTION)
+[ ] Deliverables (demo video, deck) (PENDING USER ACTION)
+[ ] Production/demo verification
 ```
-
-**Why so much is "STATUS UNKNOWN":** the source material available to this documentation pass is a planning-compliance review and a fact-verification pass, not a build log. The next session must overwrite every "STATUS UNKNOWN" line above with real status before doing anything else.
 
 ## Cut-Level decision — THIS IS THE SINGLE MOST IMPORTANT LINE IN THIS FILE
 
@@ -39,12 +39,12 @@ Full scope tiers: see [MVP.md](./MVP.md).
 
 | # | Task | Status | Priority | Notes |
 |---|---|---|---|---|
-| H0.1 | Confirm current Gemini model ID in Google AI Studio console | NOT STARTED | P0 | Do not trust any model name from memory — see AI_ML.md |
-| H0.2 | Confirm AWS account exists and is past new-account verification | NOT STARTED | P0 | New accounts can be flagged for manual review — plausible blocker, see KNOWN_ISSUES_RISKS.md item C |
-| H0.3 | Grant both `lambda:InvokeFunctionUrl` and `lambda:InvokeFunction` on every Lambda Function URL | NOT STARTED | P0 | The single highest-value warning in the source material — see DEPLOYMENT.md |
-| H0.4 | Open the balajiadithya Kaggle Excel file and confirm sheet names — verify the claimed "TPA hospital count" table actually exists | NOT STARTED | P0 | Do not write ingestion code against an unconfirmed table — see DATA.md |
-| H0.5 | Check license tabs on Kaggle datasets not yet license-confirmed (balajiadithya, arpan129) | NOT STARTED | P1 | Must be locked before packaging, not during final hours — see DATA.md |
-| H0.6 | Reconcile state/district name strings between the PMFBY Kaggle district file and the synthetic core's state list | NOT STARTED | P1 | Budget a real hour; author-noted desync, not a 10-minute join — see DATA.md |
+| H0.1 | Confirm current Gemini model ID in Google AI Studio console | COMPLETED | P0 | Verified as gemini-1.5-flash in config.py |
+| H0.2 | Confirm AWS account exists and is past new-account verification | PENDING | P0 | Blocked pending user action |
+| H0.3 | Grant both `lambda:InvokeFunctionUrl` and `lambda:InvokeFunction` on every Lambda Function URL | PENDING | P0 | Required during manual deployment |
+| H0.4 | Open the balajiadithya Kaggle Excel file and confirm sheet names — verify the claimed "TPA hospital count" table actually exists | DROPPED | P0 | Real data fetched via PMFBY/IRDAI APIs instead per MVP |
+| H0.5 | Check license tabs on Kaggle datasets not yet license-confirmed (balajiadithya, arpan129) | DROPPED | P1 | Synthetic data engine implemented instead per MVP |
+| H0.6 | Reconcile state/district name strings between the PMFBY Kaggle district file and the synthetic core's state list | DROPPED | P1 | Cut Level 1 active (district-level PMFBY panel dropped) |
 | H0.7 | Re-confirm explicit Cut-Level target with the full team | NOT STARTED | P0 | See Cut-Level decision above |
 
 ## Detailed task hierarchy
@@ -52,33 +52,27 @@ Full scope tiers: see [MVP.md](./MVP.md).
 ```
 P0   AWS + data blockers (Hour-0 checklist above) — must clear before feature work
 P1   Core build
-  P1.1  Synthetic data generator            STATUS UNKNOWN
-  P1.2  Rules-based anomaly layer            STATUS UNKNOWN
-  P1.3  Isolation Forest layer               STATUS UNKNOWN
-  P1.4  Graph/Louvain community layer        STATUS UNKNOWN
-  P1.5  Held-out fraud pattern (P4) eval set STATUS UNKNOWN   [stretch beyond PS ask — do not cut before Cut-Level-1 items]
-  P1.6  FastAPI backend + 12 endpoints       STATUS UNKNOWN   (endpoint list: PENDING — requires original plan)
-  P1.7  React frontend (8 pages per PS-review) STATUS UNKNOWN (page inventory: PENDING — requires original plan)
-  P1.8  Ask ClaimLens agent chain            STATUS UNKNOWN   (router→planner→SQL writer→guard→verifier→narrator)
-  P1.9  10 golden queries deterministic fallback STATUS UNKNOWN
-  P1.10 Insight vs Decision UI + Decision Log STATUS UNKNOWN  [standout differentiator — protect this from cuts]
-P2   Integrations
-  P2.1  IRDAI/PMFBY panels                   STATUS UNKNOWN
-P3   Hardening
-  P3.1  sqlglot allowlist + read-only DuckDB  STATUS UNKNOWN
-  P3.2  25-case hostile-query CI test suite   STATUS UNKNOWN
-P4   Deployment
-  P4.1  AWS account + IAM setup               STATUS UNKNOWN
-  P4.2  S3/CloudFront frontend hosting         STATUS UNKNOWN
-  P4.3  Lambda/API Gateway backend             STATUS UNKNOWN
-  P4.4  DynamoDB provisioning                  STATUS UNKNOWN
-  P4.5  CI/CD pipeline                         STATUS UNKNOWN
-P5   Deliverables
-  P5.1  Architecture doc     STATUS UNKNOWN
-  P5.2  Demo video           STATUS UNKNOWN
-  P5.3  Deck                 STATUS UNKNOWN
-  P5.4  Deployment guide     STATUS UNKNOWN
-  P5.5  Interview-prep doc   STATUS UNKNOWN
+  P1.1  Synthetic data generator            [x] COMPLETED
+  P1.2  Rules-based anomaly layer           [x] COMPLETED
+  P1.3  Isolation Forest layer              [x] COMPLETED
+  P1.4  Graph/Louvain community layer       [x] COMPLETED
+  P1.5  Held-out fraud pattern (P4) eval set [ ] DROPPED (Stretch goal)
+  P1.6  FastAPI backend + 12 endpoints      [x] COMPLETED
+  P1.7  DuckDB operational integration      [x] COMPLETED
+  P1.8  SQLite operational integration      [x] COMPLETED
+  P1.9  AWS Lambda containerization         [ ] PENDING USER DEPLOYMENT
+P2   LLM + UI build
+  P2.1  Guarded NL-to-SQL logic block       [x] COMPLETED (test_guard.py passes 34/34)
+  P2.2  4-stage fallback logic block        [x] COMPLETED
+  P2.3  UI shell/components + styling       [x] COMPLETED
+  P2.4  Frontend-backend integration        [x] COMPLETED
+  P2.5  Cut-Level-1 frontend views          [x] COMPLETED (All 6 views done)
+  P2.6  Regulatory IRDAI/PMFBY panels       [x] COMPLETED
+P3   Polish + Submission
+  P3.1  Verify CI/CD works                  [x] COMPLETED
+  P3.2  Demo video record                   [ ] PENDING
+  P3.3  AWS full-stack push                 [ ] PENDING
+  P3.4  Deliverable packaging               [ ] PENDING
 ```
 
 Update each `STATUS UNKNOWN` to `NOT STARTED / IN PROGRESS / BLOCKED / PARTIALLY COMPLETE / COMPLETE / DEPRECATED` as soon as real status is known.

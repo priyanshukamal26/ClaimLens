@@ -3,6 +3,10 @@ ClaimLens Nexus — Decisions Router (FR-006)
 
 Decision Log: records human decisions made on insights.
 Per ADR-004: insights and decisions are kept visually and data-model separate.
+
+Live-sync fix: list_decisions and get_decision_stats now read from SQLite
+(the operational transactional store) so newly recorded decisions appear
+immediately without waiting for a DuckDB analytics-layer reload.
 """
 
 import uuid
@@ -28,22 +32,32 @@ async def list_decisions(
     limit: int = 50,
     offset: int = 0,
 ):
-    """List all decisions in the Decision Log."""
-    results = execute_analytics_query(f"""
-        SELECT
-            d.*,
-            c.claim_amount,
-            c.anomaly_score,
-            c.claim_date,
-            p.line_of_business,
-            p.state,
-            p.policyholder_name
-        FROM decisions d
-        JOIN claims c ON d.claim_id = c.claim_id
-        JOIN policies p ON c.policy_id = p.policy_id
-        ORDER BY d.decided_at DESC
-        LIMIT {limit} OFFSET {offset}
-    """)
+    """List all decisions in the Decision Log — reads from SQLite for live sync."""
+    with sqlite_session() as conn:
+        cursor = conn.execute(f"""
+            SELECT
+                d.decision_id,
+                d.claim_id,
+                d.insight_type,
+                d.decision_type,
+                d.decided_by,
+                d.decided_at,
+                d.rationale,
+                c.claim_amount,
+                c.anomaly_score,
+                c.claim_date,
+                p.line_of_business,
+                p.state,
+                p.policyholder_name
+            FROM decisions d
+            JOIN claims c ON d.claim_id = c.claim_id
+            JOIN policies p ON c.policy_id = p.policy_id
+            ORDER BY d.decided_at DESC
+            LIMIT ? OFFSET ?
+        """, (limit, offset))
+        columns = [desc[0] for desc in cursor.description]
+        rows = cursor.fetchall()
+        results = [dict(zip(columns, row)) for row in rows]
     return {"items": results}
 
 
@@ -81,14 +95,19 @@ async def create_decision(decision: DecisionCreate):
 
 @router.get("/stats")
 async def get_decision_stats():
-    """Summary statistics for the Decision Log."""
-    results = execute_analytics_query("""
-        SELECT
-            COUNT(*) as total_decisions,
-            COUNT(CASE WHEN decision_type = 'Investigate' THEN 1 END) as investigate,
-            COUNT(CASE WHEN decision_type = 'Escalate' THEN 1 END) as escalate,
-            COUNT(CASE WHEN decision_type = 'Dismiss' THEN 1 END) as dismiss,
-            COUNT(CASE WHEN decision_type = 'Approve' THEN 1 END) as approve
-        FROM decisions
-    """)
-    return results[0] if results else {}
+    """Summary statistics for the Decision Log — reads from SQLite for live sync."""
+    with sqlite_session() as conn:
+        cursor = conn.execute("""
+            SELECT
+                COUNT(*) as total_decisions,
+                COUNT(CASE WHEN decision_type = 'Investigate' THEN 1 END) as investigate,
+                COUNT(CASE WHEN decision_type = 'Escalate' THEN 1 END) as escalate,
+                COUNT(CASE WHEN decision_type = 'Dismiss' THEN 1 END) as dismiss,
+                COUNT(CASE WHEN decision_type = 'Approve' THEN 1 END) as approve
+            FROM decisions
+        """)
+        columns = [desc[0] for desc in cursor.description]
+        row = cursor.fetchone()
+        result = dict(zip(columns, row)) if row else {}
+    return result
+

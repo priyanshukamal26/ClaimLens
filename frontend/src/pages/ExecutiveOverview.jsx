@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
-import { TrendingUp, TrendingDown, Minus, AlertTriangle } from 'lucide-react'
+import { TrendingUp, TrendingDown, Minus, AlertTriangle, Shield, Leaf } from 'lucide-react'
 import { api } from '../api.js'
 
 const LOB_COLORS = {
@@ -46,22 +46,28 @@ export default function ExecutiveOverview() {
   const [monthly, setMonthly] = useState([])
   const [byLob, setByLob] = useState([])
   const [byState, setByState] = useState([])
+  const [irdai, setIrdai] = useState(null)
+  const [pmfby, setPmfby] = useState(null)
   const [activeLob, setActiveLob] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
       try {
-        const [ov, mon, lob, st] = await Promise.all([
+        const [ov, mon, lob, st, ir, pm] = await Promise.all([
           api.getOverview(),
           api.getMonthlyTrends(activeLob ? { lob: activeLob } : {}),
           api.getTrendsByLOB(),
           api.getTrendsByState(),
+          api.getIRDAI().catch(() => null),
+          api.getPMFBY().catch(() => null),
         ])
         setOverview(ov)
         setMonthly(mon)
         setByLob(lob)
         setByState(st)
+        setIrdai(ir)
+        setPmfby(pm)
       } catch (e) {
         console.error('Failed to load overview:', e)
       } finally {
@@ -187,6 +193,66 @@ export default function ExecutiveOverview() {
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* IRDAI & PMFBY Regulatory Reference Panel (FR-009) */}
+      {(irdai || pmfby) && (
+        <div style={{ marginTop: 24 }}>
+          <h2 className="text-ui" style={{ fontSize: 16, marginBottom: 16 }}>Regulatory Context (Real Data)</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+            {irdai && (
+              <div className="card">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                  <Shield size={20} style={{ color: '#163300' }} />
+                  <h3 className="text-ui" style={{ fontSize: 15, margin: 0 }}>IRDAI Regulatory Framework</h3>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 24px', marginBottom: 16 }}>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 500, color: 'rgba(16,19,14,0.45)', marginBottom: 2 }}>Incurred Claims Ratio FY24-25</div>
+                    <div style={{ fontSize: 20, fontWeight: 700 }}>{irdai.incurred_claims_ratio?.fy2024_25}%</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 500, color: 'rgba(16,19,14,0.45)', marginBottom: 2 }}>Claims Settled (Count)</div>
+                    <div style={{ fontSize: 20, fontWeight: 700 }}>~{irdai.claims_settled_by_count?.value}%</div>
+                  </div>
+                </div>
+                <div style={{ background: 'var(--color-canvas)', borderRadius: 'var(--radius-sm)', padding: 12 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(16,19,14,0.5)', marginBottom: 6 }}>FRAUD FRAMEWORK</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{irdai.fraud_framework?.name}</div>
+                  <div style={{ fontSize: 12, color: 'rgba(16,19,14,0.6)' }}>Status: {irdai.fraud_framework?.status}</div>
+                  <ul style={{ margin: '8px 0 0 0', padding: '0 0 0 16px', fontSize: 12, color: 'rgba(16,19,14,0.6)' }}>
+                    {irdai.fraud_framework?.key_requirements?.map((req, i) => (
+                      <li key={i} style={{ marginBottom: 2 }}>{req}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+            {pmfby && (
+              <div className="card">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                  <Leaf size={20} style={{ color: '#163300' }} />
+                  <h3 className="text-ui" style={{ fontSize: 15, margin: 0 }}>PMFBY (Crop Insurance)</h3>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 24px', marginBottom: 16 }}>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 500, color: 'rgba(16,19,14,0.45)', marginBottom: 2 }}>Total Applications</div>
+                    <div style={{ fontSize: 20, fontWeight: 700 }}>{pmfby.national_summary?.total_applications}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 500, color: 'rgba(16,19,14,0.45)', marginBottom: 2 }}>Total Claims Paid</div>
+                    <div style={{ fontSize: 20, fontWeight: 700 }}>{pmfby.national_summary?.total_claims_paid}</div>
+                  </div>
+                </div>
+                <div style={{ background: 'var(--color-canvas)', borderRadius: 'var(--radius-sm)', padding: 12 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(16,19,14,0.5)', marginBottom: 6 }}>DATA SOURCE</div>
+                  <div style={{ fontSize: 12, color: 'rgba(16,19,14,0.6)' }}>{pmfby.state_claims_paid?.source}</div>
+                  <div style={{ fontSize: 11, color: 'rgba(16,19,14,0.45)', marginTop: 4 }}>License: {pmfby.state_claims_paid?.license}</div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
