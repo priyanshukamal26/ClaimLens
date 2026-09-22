@@ -7,11 +7,11 @@ import DecisionLog from './pages/DecisionLog.jsx'
 import MorningBrief from './pages/MorningBrief.jsx'
 
 const NAV_ITEMS = [
-  { path: '/overview', label: 'Executive Overview', icon: LayoutDashboard },
-  { path: '/review', label: 'Review Queue', icon: ShieldAlert },
-  { path: '/ask', label: 'Ask ClaimLens', icon: MessageSquareText },
-  { path: '/decisions', label: 'Decision Log', icon: BookCheck },
-  { path: '/brief', label: 'Morning Brief', icon: Sun },
+  { path: '/app/overview', label: 'Executive Overview', icon: LayoutDashboard },
+  { path: '/app/review', label: 'Review Queue', icon: ShieldAlert },
+  { path: '/app/ask', label: 'Ask ClaimLens', icon: MessageSquareText },
+  { path: '/app/decisions', label: 'Decision Log', icon: BookCheck },
+  { path: '/app/brief', label: 'Morning Brief', icon: Sun },
 ]
 
 function Sidebar() {
