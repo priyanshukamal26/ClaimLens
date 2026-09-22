@@ -43,11 +43,12 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS for local dev (React on :5173)
+# CORS configuration
+allow_all_origins = "*" in CORS_ORIGINS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=CORS_ORIGINS,
-    allow_credentials=True,
+    allow_origins=["*"] if allow_all_origins else CORS_ORIGINS,
+    allow_credentials=not allow_all_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -62,3 +63,11 @@ app.include_router(ask.router, prefix="/api", tags=["Ask ClaimLens"])
 app.include_router(decisions.router, prefix="/api/decisions", tags=["Decisions"])
 app.include_router(brief.router, prefix="/api/brief", tags=["Morning Brief"])
 app.include_router(external.router, prefix="/api/external", tags=["External Data"])
+
+# AWS Lambda Handler
+try:
+    from mangum import Mangum
+    handler = Mangum(app)
+except ImportError:
+    handler = None
+

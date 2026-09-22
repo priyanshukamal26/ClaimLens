@@ -13,8 +13,11 @@ load_dotenv()
 
 # --- Paths ---
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "data"
-DATA_DIR.mkdir(exist_ok=True)
+if os.getenv("AWS_LAMBDA_FUNCTION_NAME"):
+    DATA_DIR = Path("/tmp/claimlens_data")
+else:
+    DATA_DIR = Path(os.getenv("DATA_DIR", str(BASE_DIR / "data")))
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 SQLITE_DB_PATH = DATA_DIR / "claimlens.db"
 DUCKDB_PATH = DATA_DIR / "analytics.duckdb"
